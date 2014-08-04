@@ -22,7 +22,7 @@ Copyright: Copyright (c) 2014 AlephCloud, Inc.
 Category: Network, Web, AWS, Cloud, Distributed Computing
 Build-type: Simple
 
-cabal-version: >= 1.18
+cabal-version: >= 1.16
 
 extra-doc-files:
     README.md,

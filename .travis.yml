@@ -1,0 +1,12 @@
+language: haskell
+ghc:
+    - 7.6
+    - 7.8
+
+env:
+    - FLAGS=normalize-v4-signature-date
+    - FLAGS=-normalize-v4-signature-date
+
+script:
+    - cabal configure --enable-tests -flags="$FLAGS" && cabal build && cabal test
+

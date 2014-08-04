@@ -3,7 +3,7 @@
 -- ------------------------------------------------------ --
 
 Name: aws-general
-Version: 0.1
+Version: 0.1.1
 Synopsis: Bindings for AWS General API Version 0.1
 description:
     Bindings for AWS General API including AWS Signature V4.
@@ -38,7 +38,7 @@ source-repository head
 source-repository this
     type: git
     location: https://github.com/alephcloud/hs-aws-general.git
-    tag: 0.1
+    tag: 0.1.1
 
 flag normalize-signature-v4-date
     Description:

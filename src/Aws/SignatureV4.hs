@@ -161,13 +161,17 @@ type SigV4Key = ((B.ByteString,B.ByteString),(B.ByteString,B.ByteString))
 
 -- | AWS access credentials.
 --
--- This type is isomorphic to the 'Credential' type from the
+-- This type is compatible with the 'Credential' type from the
 -- <https://hackage.haskell.org/package/aws aws package>. You may
 -- use the following function to get a 'SignatureV4Credential'
 -- from a 'Credential':
 --
 -- > cred2credv4 :: Credential -> SignatureV4Credential
+-- > #if MIN_VERSION_aws(0,9,2)
+-- > cred2credv4 (Credential a b c _) = SignatureV4Credential a b c
+-- > #else
 -- > cred2credv4 (Credential a b c) = SignatureV4Credential a b c
+-- > #endif
 --
 data SignatureV4Credentials = SignatureV4Credentials
     { sigV4AccessKeyId :: B.ByteString

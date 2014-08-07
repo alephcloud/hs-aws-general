@@ -1,12 +1,8 @@
 [![Build Status](https://travis-ci.org/alephcloud/hs-aws-general.svg?branch=master)](https://travis-ci.org/alephcloud/hs-aws-general)
 
-
-Haskell Bindings for Amazon AWS General API
-===========================================
+Haskell Bindings for [Amazon Web Services (AWS) General Reference](http://docs.aws.amazon.com/general/latest/gr/)
 
 *API Version 0.1*
-
-[Amazon AWS General API Reference](http://docs.aws.amazon.com/general/latest/gr/)
 
 Installation
 ============

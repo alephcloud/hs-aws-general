@@ -4,9 +4,9 @@
 
 Name: aws-general
 Version: 0.1.1
-Synopsis: Bindings for AWS General API Version 0.1
+Synopsis: Bindings for Amazon Web Services (AWS) General Reference
 description:
-    Bindings for AWS General API including AWS Signature V4.
+    Bindings for Amazon Web Services (AWS) General Reference including AWS Signature V4.
     .
     /API Version: 1.0/
     .

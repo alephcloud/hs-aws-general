@@ -48,6 +48,11 @@ flag normalize-signature-v4-date
         since the tests in that test suite use an invalid date.
     default: True
 
+flag old-locale
+    Description: use time < 1.4 with old-local package
+    default: False
+    manual: False
+
 Library
     default-language: Haskell2010
     hs-source-dirs: src
@@ -69,12 +74,18 @@ Library
         cryptohash >= 0.11,
         hashable >= 1.2,
         http-types >= 0.8,
-        old-locale >= 1.0,
         parsers >= 0.11,
         quickcheck-instances >= 0.3,
         text >= 1.1,
-        time >= 1.4,
         transformers >= 0.3
+
+    if flag(old-locale)
+        build-depends:
+            old-locale >= 1.0,
+            time < 1.5
+    else
+        build-depends:
+            time >= 1.5
 
     ghc-options: -Wall
 

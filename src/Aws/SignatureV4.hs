@@ -127,7 +127,11 @@ import Test.QuickCheck.Instances ()
 import qualified Text.Parser.Char as P
 import qualified Text.Parser.Combinators as P
 
+#if MIN_VERSION_time(1,5,0)
+import Data.Time.Format
+#else
 import System.Locale
+#endif
 
 import qualified Network.HTTP.Types as HTTP
 

@@ -89,6 +89,8 @@ class AwsType a where
     fromText :: T.Text -> Either String a
     fromText = AP.parseOnly $ parse <* P.eof
 
+    {-# MINIMAL toText, parse #-}
+
 -- -------------------------------------------------------------------------- --
 -- General API Version
 

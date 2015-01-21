@@ -182,6 +182,7 @@ data SignatureV4Credentials = SignatureV4Credentials
     , sigV4SecretAccessKey :: B.ByteString
     , sigV4SigningKeys :: IORef [SigV4Key]
     -- ^ used internally for caching the singing key
+    , sigV4SecurityToken :: Maybe B.ByteString
     }
     deriving (Typeable)
 
@@ -189,9 +190,11 @@ newCredentials
     :: (Functor m, MonadIO m)
     => B.ByteString -- ^ Access Key ID
     -> B.ByteString -- ^ Secret Access Key
+    -> Maybe B.ByteString -- ^ Security Token
     -> m SignatureV4Credentials
-newCredentials accessKeyId secretAccessKey =
-    SignatureV4Credentials accessKeyId secretAccessKey <$> liftIO (newIORef [])
+newCredentials accessKeyId secretAccessKey securityToken = do
+    signingKeysRef <- liftIO $ newIORef []
+    return $ SignatureV4Credentials accessKeyId secretAccessKey signingKeysRef securityToken
 
 -- -------------------------------------------------------------------------- --
 -- Canonical URI

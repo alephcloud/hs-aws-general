@@ -1,6 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
 -- |
 -- Module: Aws.SignatureV4
@@ -722,6 +723,7 @@ signGetRequest_ key credentials region service date method path query headers pa
         , ("X-Amz-Credential", Just $ authorizationCredential credentials credentialScope)
         , ("X-Amz-Date", Just $ fTime signingStringDateFormat date)
         , ("X-Amz-SignedHeaders", let SignedHeaders h = shdrs in Just (T.decodeUtf8 h))
+        , ("X-Amz-Security-Token", T.decodeUtf8 <$> sigV4SecurityToken credentials)
         ]
     authz = authorizationInfo credentials credentialScope shdrs date sig
     sig = requestSignature key str
@@ -799,6 +801,7 @@ signPostRequest_ key credentials region service date method path query headers p
         }
     headersWithDate = ("x-amz-date", fTime signingStringDateFormat date)
         : filter (\x -> fst x /= "date" && fst x /= "x-amz-date") headers
+        ++ maybe [] ((:[]) . ("X-Amz-Security-Token",)) (sigV4SecurityToken credentials)
 
 -- -------------------------------------------------------------------------- --
 -- Sign Request in IO

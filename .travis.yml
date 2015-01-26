@@ -7,6 +7,9 @@ env:
     - FLAGS=normalize-v4-signature-date
     - FLAGS=-normalize-v4-signature-date
 
+install:
+    - cabal install --only-dependencies --enable-tests --force-reinstalls
+
 script:
     - cabal configure --enable-tests -flags="$FLAGS" && cabal build && cabal test
 

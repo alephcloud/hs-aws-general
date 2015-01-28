@@ -1,3 +1,9 @@
+0.2.0
+=====
+
+*   Support X-Amz-Security-Token header for signing with credentials derived
+    from IAM role.
+
 0.1.1
 =====
 

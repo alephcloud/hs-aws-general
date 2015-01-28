@@ -119,7 +119,7 @@ amz_credentialScope = either error id
     $ fromText "20110909/us-east-1/host/aws4_request"
 
 amz_credentialsIO :: IO SignatureV4Credentials
-amz_credentialsIO = newCredentials "AKIDEXAMPLE" "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"
+amz_credentialsIO = newCredentials "AKIDEXAMPLE" "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY" Nothing
 
 amz_credentials :: SignatureV4Credentials
 amz_credentials = unsafePerformIO $ amz_credentialsIO

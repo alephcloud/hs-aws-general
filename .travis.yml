@@ -12,9 +12,6 @@ env:
 install:
     - travis_retry cabal install --only-dependencies --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" --force-reinstalls
 
-install:
-    - cabal install --only-dependencies --enable-tests --force-reinstalls
-
 script:
     - cabal configure --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" && cabal build && cabal test
 

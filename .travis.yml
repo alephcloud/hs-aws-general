@@ -4,9 +4,14 @@ ghc:
     - 7.8
 
 env:
-    - FLAGS=normalize-v4-signature-date
-    - FLAGS=-normalize-v4-signature-date
+    - FLAGS=normalize-v4-signature-date CONSTRAINTS='time<1.5'
+    - FLAGS=-normalize-v4-signature-date CONSTRAINTS='time<1.5'
+    - FLAGS=normalize-v4-signature-date CONSTRAINTS='time>=1.5'
+    - FLAGS=-normalize-v4-signature-date CONSTRAINTS='time>=1.5'
+
+install:
+    - travis_retry cabal install --only-dependencies --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" --force-reinstalls
 
 script:
-    - cabal configure --enable-tests -flags="$FLAGS" && cabal build && cabal test
+    - cabal configure --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" && cabal build && cabal test
 

@@ -266,8 +266,11 @@ instance Hashable Region where
 instance Q.Arbitrary Region where
     arbitrary = Q.oneof
         [ Q.elements standardRegions
-        , CustomEndpoint <$> Q.arbitrary <*> Q.arbitrary
+        , CustomEndpoint <$> arbitraryEndpoint <*> arbitraryPort
         ]
+      where
+        arbitraryEndpoint = fmap T.pack . Q.listOf . Q.elements $ '.' : ['a'..'z']
+        arbitraryPort = Q.choose (0, 10000)
 
 -- -------------------------------------------------------------------------- --
 -- AWS Account Id

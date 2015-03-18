@@ -66,6 +66,7 @@ import Control.Monad
 import Data.Aeson (ToJSON(..), FromJSON(..), withText)
 import qualified Data.Attoparsec.Text as AP
 import Data.Hashable (Hashable, hashWithSalt, hashUsing)
+import qualified Data.List as L
 import Data.Monoid
 import Data.String
 import qualified Data.Text as T
@@ -213,6 +214,19 @@ instance AwsType Region where
     toText = regionToText
     parse = parseRegion
 
+standardRegions :: [Region]
+standardRegions =
+    [ ApNortheast1
+    , ApSoutheast1
+    , ApSoutheast2
+    , EuWest1
+    , SaEast1
+    , UsEast1
+    , UsWest1
+    , UsWest2
+    ]
+
+
 {-
 instance FromJSON Ec2Region where
     parseJSON = withText "Ec2Region" $ either fail return ∘ readEither ∘ T.unpack
@@ -222,24 +236,17 @@ instance ToJSON Ec2Region where
 -}
 
 instance Hashable Region where
-    hashWithSalt = hashUsing show
+    hashWithSalt s (CustomEndpoint e) = s `hashWithSalt` (0 :: Int) `hashWithSalt` e
+    hashWithSalt s r =
+        case L.elemIndex r standardRegions of
+            Just i -> hashWithSalt s (succ i)
+            Nothing -> error "hashWithSalt: unrecognized region"
 
 instance Q.Arbitrary Region where
     arbitrary = Q.oneof
-        [ Q.elements regions
+        [ Q.elements standardRegions
         , CustomEndpoint <$> Q.arbitrary
         ]
-      where
-        regions =
-            [ ApNortheast1
-            , ApSoutheast1
-            , ApSoutheast2
-            , EuWest1
-            , SaEast1
-            , UsEast1
-            , UsWest1
-            , UsWest2
-            ]
 
 -- -------------------------------------------------------------------------- --
 -- AWS Account Id

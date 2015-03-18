@@ -219,7 +219,7 @@ instance ToJSON Ec2Region where
 -}
 
 instance Hashable Region where
-     hashWithSalt = hashUsing fromEnum
+    hashWithSalt = hashUsing fromEnum
 
 instance Q.Arbitrary Region where
     arbitrary = Q.elements [minBound..maxBound]

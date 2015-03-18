@@ -183,7 +183,7 @@ data Region
     | UsEast1
     | UsWest1
     | UsWest2
-    | CustomEndpoint !T.Text
+    | CustomEndpoint !T.Text !Int
     deriving (Show, Read, Eq, Ord, Typeable)
 
 regionToText :: (Monoid a, IsString a) => Region -> a
@@ -195,7 +195,7 @@ regionToText SaEast1 = "sa-east-1"
 regionToText UsEast1 = "us-east-1"
 regionToText UsWest1 = "us-west-1"
 regionToText UsWest2 = "us-west-2"
-regionToText (CustomEndpoint e) = "custom:" <> fromString (T.unpack e)
+regionToText (CustomEndpoint e p) = "custom:" <> fromString (T.unpack e) <> ":" <> fromString (show p)
 
 parseRegion :: P.CharParsing m => m Region
 parseRegion =
@@ -207,8 +207,12 @@ parseRegion =
     <|> UsEast1 <$ P.text "us-east-1"
     <|> UsWest1 <$ P.text "us-west-1"
     <|> UsWest2 <$ P.text "us-west-2"
-    <|> CustomEndpoint . T.pack <$> (P.text "custom:" *> many P.anyChar)
+    <|> parseCustomEndpoint
     <?> "Region"
+  where
+    parseCustomEndpoint = CustomEndpoint
+        <$> (fmap T.pack $ P.text "custom:" *> many (P.notChar ':'))
+        <*> (fmap read $ P.text ":" *> AP.many1 P.digit)
 
 instance AwsType Region where
     toText = regionToText
@@ -236,7 +240,7 @@ instance ToJSON Ec2Region where
 -}
 
 instance Hashable Region where
-    hashWithSalt s (CustomEndpoint e) = s `hashWithSalt` (0 :: Int) `hashWithSalt` e
+    hashWithSalt s (CustomEndpoint e p) = s `hashWithSalt` (0 :: Int) `hashWithSalt` (e, p)
     hashWithSalt s r =
         case L.elemIndex r standardRegions of
             Just i -> hashWithSalt s (succ i)
@@ -245,7 +249,7 @@ instance Hashable Region where
 instance Q.Arbitrary Region where
     arbitrary = Q.oneof
         [ Q.elements standardRegions
-        , CustomEndpoint <$> Q.arbitrary
+        , CustomEndpoint <$> Q.arbitrary <*> Q.arbitrary
         ]
 
 -- -------------------------------------------------------------------------- --

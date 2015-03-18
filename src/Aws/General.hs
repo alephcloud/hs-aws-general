@@ -184,6 +184,9 @@ data Region
     | UsWest1
     | UsWest2
     | CustomEndpoint !T.Text !Int
+    -- ^ To override the region settings with a custom service endpoint, e.g.
+    -- for testing purpose:w
+
     deriving (Show, Read, Eq, Ord, Typeable)
 
 regionToText :: (Monoid a, IsString a) => Region -> a

@@ -197,6 +197,20 @@ regionToText UsWest1 = "us-west-1"
 regionToText UsWest2 = "us-west-2"
 regionToText (CustomEndpoint e p) = "custom:" <> fromString (T.unpack e) <> ":" <> fromString (show p)
 
+-- | Regions are parsed as follows:
+--
+-- @
+-- 'ApNortheast1'   ::= "ap-northeast-1"
+-- 'ApSoutheast1'   ::= "ap-southeast-1"
+-- 'ApSoutheast2'   ::= "ap-southeast-2"
+-- 'EuWest1'        ::= "eu-west-1"
+-- 'SaEast1'        ::= "sa-east-1"
+-- 'UsEast1'        ::= "us-east-1"
+-- 'UsWest1'        ::= "us-west-1"
+-- 'UsWest2'        ::= "us-west-2"
+-- 'CustomEndpoint' ::= "custom:" 'T.Text' ":" 'Int'
+-- @
+--
 parseRegion :: P.CharParsing m => m Region
 parseRegion =
     ApNortheast1 <$ P.text "ap-northeast-1"

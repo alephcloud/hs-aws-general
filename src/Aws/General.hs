@@ -182,9 +182,10 @@ data Region
     | UsEast1
     | UsWest1
     | UsWest2
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    | CustomEndpoint !T.Text
+    deriving (Show, Read, Eq, Ord, Typeable)
 
-regionToText :: IsString a => Region -> a
+regionToText :: (Monoid a, IsString a) => Region -> a
 regionToText ApNortheast1 = "ap-northeast-1"
 regionToText ApSoutheast1 = "ap-southeast-1"
 regionToText ApSoutheast2 = "ap-southeast-2"
@@ -193,6 +194,7 @@ regionToText SaEast1 = "sa-east-1"
 regionToText UsEast1 = "us-east-1"
 regionToText UsWest1 = "us-west-1"
 regionToText UsWest2 = "us-west-2"
+regionToText (CustomEndpoint e) = "custom:" <> fromString (T.unpack e)
 
 parseRegion :: P.CharParsing m => m Region
 parseRegion =
@@ -204,6 +206,7 @@ parseRegion =
     <|> UsEast1 <$ P.text "us-east-1"
     <|> UsWest1 <$ P.text "us-west-1"
     <|> UsWest2 <$ P.text "us-west-2"
+    <|> CustomEndpoint . T.pack <$> (P.text "custom:" *> many P.anyChar)
     <?> "Region"
 
 instance AwsType Region where
@@ -219,10 +222,24 @@ instance ToJSON Ec2Region where
 -}
 
 instance Hashable Region where
-    hashWithSalt = hashUsing fromEnum
+    hashWithSalt = hashUsing show
 
 instance Q.Arbitrary Region where
-    arbitrary = Q.elements [minBound..maxBound]
+    arbitrary = Q.oneof
+        [ Q.elements regions
+        , CustomEndpoint <$> Q.arbitrary
+        ]
+      where
+        regions =
+            [ ApNortheast1
+            , ApSoutheast1
+            , ApSoutheast2
+            , EuWest1
+            , SaEast1
+            , UsEast1
+            , UsWest1
+            , UsWest2
+            ]
 
 -- -------------------------------------------------------------------------- --
 -- AWS Account Id

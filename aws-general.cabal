@@ -38,7 +38,7 @@ source-repository head
 source-repository this
     type: git
     location: https://github.com/alephcloud/hs-aws-general.git
-    tag: 0.2.0
+    tag: 0.2.1
 
 flag normalize-signature-v4-date
     Description:

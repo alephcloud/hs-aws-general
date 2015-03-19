@@ -66,6 +66,7 @@ import Control.Monad
 import Data.Aeson (ToJSON(..), FromJSON(..), withText)
 import qualified Data.Attoparsec.Text as AP
 import Data.Hashable (Hashable, hashWithSalt, hashUsing)
+import qualified Data.List as L
 import Data.Monoid
 import Data.String
 import qualified Data.Text as T
@@ -182,9 +183,13 @@ data Region
     | UsEast1
     | UsWest1
     | UsWest2
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    | CustomEndpoint !T.Text !Int
+    -- ^ To override the region settings with a custom service endpoint, e.g.
+    -- for testing purpose
 
-regionToText :: IsString a => Region -> a
+    deriving (Show, Read, Eq, Ord, Typeable)
+
+regionToText :: (Monoid a, IsString a) => Region -> a
 regionToText ApNortheast1 = "ap-northeast-1"
 regionToText ApSoutheast1 = "ap-southeast-1"
 regionToText ApSoutheast2 = "ap-southeast-2"
@@ -193,7 +198,22 @@ regionToText SaEast1 = "sa-east-1"
 regionToText UsEast1 = "us-east-1"
 regionToText UsWest1 = "us-west-1"
 regionToText UsWest2 = "us-west-2"
+regionToText (CustomEndpoint e p) = "custom:" <> fromString (T.unpack e) <> ":" <> fromString (show p)
 
+-- | Regions are parsed as follows:
+--
+-- @
+-- 'ApNortheast1'   ::= "ap-northeast-1"
+-- 'ApSoutheast1'   ::= "ap-southeast-1"
+-- 'ApSoutheast2'   ::= "ap-southeast-2"
+-- 'EuWest1'        ::= "eu-west-1"
+-- 'SaEast1'        ::= "sa-east-1"
+-- 'UsEast1'        ::= "us-east-1"
+-- 'UsWest1'        ::= "us-west-1"
+-- 'UsWest2'        ::= "us-west-2"
+-- 'CustomEndpoint' ::= "custom:" 'T.Text' ":" 'Int'
+-- @
+--
 parseRegion :: P.CharParsing m => m Region
 parseRegion =
     ApNortheast1 <$ P.text "ap-northeast-1"
@@ -204,11 +224,29 @@ parseRegion =
     <|> UsEast1 <$ P.text "us-east-1"
     <|> UsWest1 <$ P.text "us-west-1"
     <|> UsWest2 <$ P.text "us-west-2"
+    <|> parseCustomEndpoint
     <?> "Region"
+  where
+    parseCustomEndpoint = CustomEndpoint
+        <$> (fmap T.pack $ P.text "custom:" *> many (P.notChar ':'))
+        <*> (fmap read $ P.text ":" *> some P.digit)
 
 instance AwsType Region where
     toText = regionToText
     parse = parseRegion
+
+standardRegions :: [Region]
+standardRegions =
+    [ ApNortheast1
+    , ApSoutheast1
+    , ApSoutheast2
+    , EuWest1
+    , SaEast1
+    , UsEast1
+    , UsWest1
+    , UsWest2
+    ]
+
 
 {-
 instance FromJSON Ec2Region where
@@ -219,10 +257,20 @@ instance ToJSON Ec2Region where
 -}
 
 instance Hashable Region where
-     hashWithSalt = hashUsing fromEnum
+    hashWithSalt s (CustomEndpoint e p) = s `hashWithSalt` (0 :: Int) `hashWithSalt` (e, p)
+    hashWithSalt s r =
+        case L.elemIndex r standardRegions of
+            Just i -> hashWithSalt s (succ i)
+            Nothing -> hashWithSalt s (length standardRegions + 1)
 
 instance Q.Arbitrary Region where
-    arbitrary = Q.elements [minBound..maxBound]
+    arbitrary = Q.oneof
+        [ Q.elements standardRegions
+        , CustomEndpoint <$> arbitraryEndpoint <*> arbitraryPort
+        ]
+      where
+        arbitraryEndpoint = fmap T.pack . Q.listOf . Q.elements $ '.' : ['a'..'z']
+        arbitraryPort = Q.choose (0, 10000)
 
 -- -------------------------------------------------------------------------- --
 -- AWS Account Id

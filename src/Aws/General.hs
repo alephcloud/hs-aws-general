@@ -185,7 +185,7 @@ data Region
     | UsWest2
     | CustomEndpoint !T.Text !Int
     -- ^ To override the region settings with a custom service endpoint, e.g.
-    -- for testing purpose:w
+    -- for testing purpose
 
     deriving (Show, Read, Eq, Ord, Typeable)
 
@@ -229,7 +229,7 @@ parseRegion =
   where
     parseCustomEndpoint = CustomEndpoint
         <$> (fmap T.pack $ P.text "custom:" *> many (P.notChar ':'))
-        <*> (fmap read $ P.text ":" *> AP.many1 P.digit)
+        <*> (fmap read $ P.text ":" *> some P.digit)
 
 instance AwsType Region where
     toText = regionToText
@@ -261,7 +261,7 @@ instance Hashable Region where
     hashWithSalt s r =
         case L.elemIndex r standardRegions of
             Just i -> hashWithSalt s (succ i)
-            Nothing -> error "hashWithSalt: unrecognized region"
+            Nothing -> hashWithSalt s (length standardRegions + 1)
 
 instance Q.Arbitrary Region where
     arbitrary = Q.oneof

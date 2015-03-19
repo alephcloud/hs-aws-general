@@ -1,3 +1,8 @@
+0.2.1
+=====
+
+*   Add support for custom endpoints beyond the standard regions.
+
 0.2.0
 =====
 

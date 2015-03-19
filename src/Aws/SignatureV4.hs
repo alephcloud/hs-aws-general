@@ -119,7 +119,6 @@ import Data.String
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Time.Clock (UTCTime, getCurrentTime, utctDay)
-import Data.Time.Format (formatTime, parseTime)
 import Data.Typeable
 
 import qualified Test.QuickCheck as Q
@@ -129,8 +128,9 @@ import qualified Text.Parser.Char as P
 import qualified Text.Parser.Combinators as P
 
 #if MIN_VERSION_time(1,5,0)
-import Data.Time.Format
+import Data.Time.Format (defaultTimeLocale, formatTime, parseTimeM)
 #else
+import Data.Time.Format (formatTime, parseTime)
 import System.Locale
 #endif
 
@@ -342,7 +342,11 @@ parseHttpDate s =
     <|> p "%Y-%m-%dT%H:%M:%S%QZ" s      -- iso 8601
     <|> p "%Y-%m-%dT%H:%M:%S%Q%Z" s     -- iso 8601
   where
+#if MIN_VERSION_time(1,5,0)
+    p = parseTimeM True defaultTimeLocale
+#else
     p = parseTime defaultTimeLocale
+#endif
 #endif
 
 -- | Normalization of the date header breaks the AWS test suite, since the
@@ -451,9 +455,14 @@ parseCredentialScope = CredentialScope
   where
     time = do
         str <- P.count 8 P.digit
-        case parseTime defaultTimeLocale credentialScopeDateFormat str of
+        case p credentialScopeDateFormat str of
             Nothing -> fail $ "failed to parse credential scope date: " <> str
             Just t -> return t
+#if MIN_VERSION_time(1,5,0)
+    p = parseTimeM True defaultTimeLocale
+#else
+    p = parseTime defaultTimeLocale
+#endif
 
 terminationString :: IsString a => a
 terminationString = "aws4_request"

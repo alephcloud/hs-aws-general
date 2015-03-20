@@ -23,6 +23,11 @@ before_install:
     - if [ "$CONSTRAINTS" = 'time<1.5' ] ; then mkdir -p $HOME/.cabal-time-1.4 ; ln -s $HOME/.cabal-time-1.4 $HOME/.cabal ; else mkdir -p $HOME/.cabal-time-1.5 ; ln -s $HOME/.cabal-time-1.5 $HOME/.cabal ; fi
 
 install:
+    - cabal update
+    - ls -liash $HOME/
+    - ls -liash $HOME/.ghc
+    - ls -liash $HOME/.cabal
+    - ghc-pkg check
     - travis_retry cabal install --only-dependencies --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" --force-reinstalls
 
 script:

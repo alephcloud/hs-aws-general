@@ -26,8 +26,8 @@ before_install:
 install:
     - cabal update
     - ls -liash $HOME/
-    - ls -liash $HOME/.ghc
-    - ls -liash $HOME/.cabal
+    - ls -liash $HOME/.ghc/
+    - ls -liash $HOME/.cabal/
     - ghc-pkg check
     - travis_retry cabal install --only-dependencies --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" --force-reinstalls
 

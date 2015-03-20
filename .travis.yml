@@ -19,6 +19,7 @@ cache:
         - $HOME/.cabal-time-1.5
 
 before_install:
+    - rm -rf $HOME/.cabal $HOME/.ghc
     - if [ "$CONSTRAINTS" = 'time<1.5' ] ; then mkdir -p $HOME/.ghc-time-1.4 ; ln -s $HOME/.ghc-time-1.4 $HOME/.ghc ; else mkdir -p $HOME/.ghc-time-1.5 ; ln -s $HOME/.ghc-time-1.5 $HOME/.ghc ; fi
     - if [ "$CONSTRAINTS" = 'time<1.5' ] ; then mkdir -p $HOME/.cabal-time-1.4 ; ln -s $HOME/.cabal-time-1.4 $HOME/.cabal ; else mkdir -p $HOME/.cabal-time-1.5 ; ln -s $HOME/.cabal-time-1.5 $HOME/.cabal ; fi
 

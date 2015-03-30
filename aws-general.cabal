@@ -3,7 +3,7 @@
 -- ------------------------------------------------------ --
 
 Name: aws-general
-Version: 0.2.1
+Version: 0.2.2
 Synopsis: Bindings for Amazon Web Services (AWS) General Reference
 description:
     Bindings for Amazon Web Services (AWS) General Reference including AWS Signature V4.
@@ -18,7 +18,7 @@ License: MIT
 License-file: LICENSE
 Author: Lars Kuhtz <lars@alephcloud.com>
 Maintainer: Lars Kuhtz <lars@alephcloud.com>
-Copyright: Copyright (c) 2014 AlephCloud, Inc.
+Copyright: Copyright (c) 2014-2015 AlephCloud, Inc.
 Category: Network, Web, AWS, Cloud, Distributed Computing
 Build-type: Simple
 
@@ -38,7 +38,7 @@ source-repository head
 source-repository this
     type: git
     location: https://github.com/alephcloud/hs-aws-general.git
-    tag: 0.2.1
+    tag: 0.2.2
 
 flag normalize-signature-v4-date
     Description:

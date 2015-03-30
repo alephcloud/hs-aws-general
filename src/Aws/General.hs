@@ -1,7 +1,8 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
 -- Module: Aws.General
@@ -61,6 +62,7 @@ module Aws.General
 ) where
 
 import Control.Applicative
+import Control.DeepSeq
 import Control.Monad
 
 import Data.Aeson (ToJSON(..), FromJSON(..), withText)
@@ -71,6 +73,8 @@ import Data.Monoid
 import Data.String
 import qualified Data.Text as T
 import Data.Typeable
+
+import GHC.Generics
 
 import qualified Test.QuickCheck as Q
 import Test.QuickCheck.Instances ()
@@ -97,7 +101,9 @@ class AwsType a where
 
 data GeneralVersion
     = GeneralVersion_1_0
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable, Generic)
+
+instance NFData GeneralVersion
 
 generalVersionToText :: (IsString a) => GeneralVersion -> a
 generalVersionToText GeneralVersion_1_0 = "1.0"
@@ -119,7 +125,9 @@ instance Q.Arbitrary GeneralVersion where
 data SignatureVersion
     = SignatureVersion2
     | SignatureVersion4
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable, Generic)
+
+instance NFData SignatureVersion
 
 signatureVersionToText :: IsString a => SignatureVersion -> a
 signatureVersionToText SignatureVersion2 = "2"
@@ -144,7 +152,9 @@ instance Q.Arbitrary SignatureVersion where
 data SignatureMethod
     = SignatureMethodSha1
     | SignatureMethodSha256
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable, Generic)
+
+instance NFData SignatureMethod
 
 signatureMethodToText :: IsString a => SignatureMethod -> a
 signatureMethodToText SignatureMethodSha1 = "HmacSHA1"
@@ -187,7 +197,9 @@ data Region
     -- ^ To override the region settings with a custom service endpoint, e.g.
     -- for testing purpose
 
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData Region
 
 regionToText :: (Monoid a, IsString a) => Region -> a
 regionToText ApNortheast1 = "ap-northeast-1"
@@ -282,7 +294,9 @@ instance Q.Arbitrary Region where
 -- This is actually a 12 digit number.
 --
 newtype AccountId = AccountId T.Text
-    deriving (Show, Read, Eq, Ord, IsString, Typeable)
+    deriving (Show, Read, Eq, Ord, IsString, Typeable, Generic)
+
+instance NFData AccountId
 
 accountIdToText :: (IsString a) => AccountId -> a
 accountIdToText (AccountId t) = fromString $ T.unpack t
@@ -309,7 +323,9 @@ instance Q.Arbitrary AccountId where
 -- This is actually a long hexadecimal number
 --
 newtype CanonicalUserId = CanonicalUserId T.Text
-    deriving (Show, Read, Eq, Ord, IsString, Typeable)
+    deriving (Show, Read, Eq, Ord, IsString, Typeable, Generic)
+
+instance NFData CanonicalUserId
 
 canonicalUserIdToText :: (IsString a) => CanonicalUserId -> a
 canonicalUserIdToText (CanonicalUserId t) = fromString $ T.unpack t
@@ -367,7 +383,9 @@ data ServiceNamespace
     | ServiceNamespaceSwf
     | ServiceNamespaceHost
     -- ^ For testing purposes (see <http://docs.aws.amazon.com/general/1.0/gr/signature-v4-test-suite.html>)
-    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Typeable, Generic)
+
+instance NFData ServiceNamespace
 
 serviceNamespaceToText :: IsString a => ServiceNamespace -> a
 serviceNamespaceToText ServiceNamespaceAwsPortal = "aws-portal"
@@ -462,7 +480,9 @@ data Arn = Arn
     -- ^ expected to be non-empty. Elements are separated by only @:@.
     -- @/@ is not treated specially.
     }
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData Arn
 
 arnToText :: (IsString a, Monoid a) => Arn -> a
 arnToText arn = "arn:aws"

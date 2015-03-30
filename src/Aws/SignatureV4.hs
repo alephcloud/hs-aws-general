@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
@@ -100,6 +101,7 @@ import Aws.General
 
 import Control.Applicative
 import Control.Arrow hiding (left)
+import Control.DeepSeq
 import Control.Monad.IO.Class
 
 import Crypto.Hash
@@ -120,6 +122,8 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Time.Clock (UTCTime, getCurrentTime, utctDay)
 import Data.Typeable
+
+import GHC.Generics
 
 import qualified Test.QuickCheck as Q
 import Test.QuickCheck.Instances ()
@@ -185,7 +189,7 @@ data SignatureV4Credentials = SignatureV4Credentials
     -- ^ used internally for caching the singing key
     , sigV4SecurityToken :: Maybe B.ByteString
     }
-    deriving (Typeable)
+    deriving (Typeable, Generic)
 
 newCredentials
     :: (Functor m, MonadIO m)
@@ -204,7 +208,9 @@ type UriPath = [T.Text]
 type UriQuery = HTTP.QueryText
 
 newtype CanonicalUri = CanonicalUri B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData CanonicalUri
 
 -- | Compute canonical URI
 --
@@ -256,7 +262,9 @@ normalizeUriQuery =
 -- Canonical Headers
 
 newtype CanonicalHeaders = CanonicalHeaders B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData CanonicalHeaders
 
 -- | Compute canonical HTTP headers
 --
@@ -366,7 +374,9 @@ dateNormalizationEnabled = False
 -- Signed Headers
 
 newtype SignedHeaders = SignedHeaders B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData SignedHeaders
 
 -- | Compute signed headers
 --
@@ -383,7 +393,9 @@ signedHeaders = SignedHeaders
 -- Canonical Request
 
 newtype CanonicalRequest = CanonicalRequest B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData CanonicalRequest
 
 -- | Create Canonical Request for AWS Signature Version 4
 --
@@ -417,7 +429,9 @@ canonicalRequest method path query headers payload =
 -- The hash is stored hex encoded
 --
 newtype HashedCanonicalRequest = HashedCanonicalRequest B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData HashedCanonicalRequest
 
 hashedCanonicalRequest :: CanonicalRequest -> HashedCanonicalRequest
 hashedCanonicalRequest (CanonicalRequest r) = HashedCanonicalRequest
@@ -431,7 +445,9 @@ data CredentialScope = CredentialScope
     , credentialScopeRegion :: !Region
     , credentialScopeService :: !ServiceNamespace
     }
-    deriving (Show, Read, Typeable)
+    deriving (Show, Read, Typeable, Generic)
+
+instance NFData CredentialScope
 
 instance Eq CredentialScope where
     CredentialScope a0 b0 c0 == CredentialScope a1 b1 c1 =
@@ -487,7 +503,9 @@ instance Q.Arbitrary CredentialScope where
 -- String to Sign
 
 newtype StringToSign = StringToSign B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData StringToSign
 
 -- | Create the String to Sign for AWS Signature Version 4
 --
@@ -517,7 +535,9 @@ signingStringDateFormat = "%Y%m%dT%H%M%SZ"
 -- to the same service and the region till 00:00:00 UTC time.
 --
 newtype SigningKey = SigningKey B.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData SigningKey
 
 -- | Derive the signing key
 --
@@ -543,7 +563,9 @@ signingKeyPrefix = "AWS4"
 -- Request Signature
 
 newtype Signature = Signature B8.ByteString
-    deriving (Show, Read, Eq, Ord, Typeable)
+    deriving (Show, Read, Eq, Ord, Typeable, Generic)
+
+instance NFData Signature
 
 -- | Compute an AWS Signature Version 4
 --

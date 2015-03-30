@@ -1,3 +1,8 @@
+0.2.2
+=====
+
+*   Provide `NFData` instance for all suitable types.
+
 0.2.1
 =====
 

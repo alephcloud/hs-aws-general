@@ -188,6 +188,7 @@ data Region
     = ApNortheast1
     | ApSoutheast1
     | ApSoutheast2
+    | EuCentral1
     | EuWest1
     | SaEast1
     | UsEast1
@@ -205,6 +206,7 @@ regionToText :: (Monoid a, IsString a) => Region -> a
 regionToText ApNortheast1 = "ap-northeast-1"
 regionToText ApSoutheast1 = "ap-southeast-1"
 regionToText ApSoutheast2 = "ap-southeast-2"
+regionToText EuCentral1 = "eu-central-1"
 regionToText EuWest1 = "eu-west-1"
 regionToText SaEast1 = "sa-east-1"
 regionToText UsEast1 = "us-east-1"
@@ -218,6 +220,7 @@ regionToText (CustomEndpoint e p) = "custom:" <> fromString (T.unpack e) <> ":" 
 -- 'ApNortheast1'   ::= "ap-northeast-1"
 -- 'ApSoutheast1'   ::= "ap-southeast-1"
 -- 'ApSoutheast2'   ::= "ap-southeast-2"
+-- 'EuCentral1'     ::= "eu-central-1"
 -- 'EuWest1'        ::= "eu-west-1"
 -- 'SaEast1'        ::= "sa-east-1"
 -- 'UsEast1'        ::= "us-east-1"
@@ -231,6 +234,7 @@ parseRegion =
     ApNortheast1 <$ P.text "ap-northeast-1"
     <|> ApSoutheast1 <$ P.text "ap-southeast-1"
     <|> ApSoutheast2 <$ P.text "ap-southeast-2"
+    <|> EuCentral1 <$ P.text "eu-central-1"
     <|> EuWest1 <$ P.text "eu-west-1"
     <|> SaEast1 <$ P.text "sa-east-1"
     <|> UsEast1 <$ P.text "us-east-1"
@@ -253,6 +257,7 @@ standardRegions =
     , ApSoutheast1
     , ApSoutheast2
     , EuWest1
+    , EuCentral1
     , SaEast1
     , UsEast1
     , UsWest1

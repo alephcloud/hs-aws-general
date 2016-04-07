@@ -1,4 +1,6 @@
+sudo: false
 language: haskell
+
 ghc:
     - 7.6
     - 7.8
@@ -9,7 +11,20 @@ env:
     - FLAGS=normalize-v4-signature-date CONSTRAINTS='time>=1.5'
     - FLAGS=-normalize-v4-signature-date CONSTRAINTS='time>=1.5'
 
+cache:
+    directories:
+        - $HOME/.ghc-time-1.4
+        - $HOME/.cabal-time-1.4
+        - $HOME/.ghc-time-1.5
+        - $HOME/.cabal-time-1.5
+
+before_install:
+    - rm -rf $HOME/.cabal $HOME/.ghc
+    - if [ "$CONSTRAINTS" = 'time<1.5' ] ; then mkdir -p $HOME/.ghc-time-1.4 ; ln -s $HOME/.ghc-time-1.4 $HOME/.ghc ; else mkdir -p $HOME/.ghc-time-1.5 ; ln -s $HOME/.ghc-time-1.5 $HOME/.ghc ; fi
+    - if [ "$CONSTRAINTS" = 'time<1.5' ] ; then mkdir -p $HOME/.cabal-time-1.4 ; ln -s $HOME/.cabal-time-1.4 $HOME/.cabal ; else mkdir -p $HOME/.cabal-time-1.5 ; ln -s $HOME/.cabal-time-1.5 $HOME/.cabal ; fi
+
 install:
+    - cabal update
     - travis_retry cabal install --only-dependencies --enable-tests --flags="$FLAGS" --constraint="$CONSTRAINTS" --force-reinstalls
 
 script:
